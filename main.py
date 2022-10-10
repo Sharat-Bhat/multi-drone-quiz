@@ -9,6 +9,8 @@ def esdf_1d(grid):
 
     Args:
         grid (float64): Holds the upper bound on the nearest obstacle distance along the axis
+    Return:
+        dist_transform of each column along the given axis of the grid
     """
     N = grid.shape[0]
     k = np.zeros(grid.shape[1:]).astype(np.int32) # Index of rightmost element in lower envelope
@@ -23,16 +25,15 @@ def esdf_1d(grid):
     for q in range(1, N):
         v_k = np.take_along_axis(v, k[None, :], axis=0).astype(np.int32) # Get value of v at corresponding k indices
         grid_v_k = np.take_along_axis(grid, v_k, axis=0) # Get the values of grid at the corresponding k values
-        s = ((grid[q,...] + q*q) - (grid_v_k + v_k*v_k))/(2*q - 2*v_k)
+        s = ((grid[q,...] + q*q) - (grid_v_k + v_k*v_k))/(2*q - 2*v_k) # Gives s value for each column
         z_k = np.take_along_axis(z, k[None, :], axis=0) # Get the value of z at corresponding k indices
         mask = (s <= z_k)
         # Loop terminates only if none of the s values are less than z_k
         while mask.any():
             # Update k values of those 1D-arrays whose value is now less than of equal to z
-            # Loop won't terminate till all the 1D arrays satisfies the condition
             k[np.squeeze(mask, axis=0)] -= 1
             v_k = np.take_along_axis(v, k[None, :], axis=0).astype(np.int32)
-            grid_v_k = np.take_along_axis(grid, v_k, axis=0)
+            grid_v_k = np.take_along_axis(grid, v_k, axis=0) # Get values of grid at corresponding v_k locations
             s = ((grid[q,...] + q*q) - (grid_v_k + v_k*v_k))/(2*q - 2*v_k)
             z_k = np.take_along_axis(z, k[None, :], axis=0)
             mask = (s <= z_k)

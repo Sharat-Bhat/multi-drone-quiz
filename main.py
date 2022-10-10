@@ -26,6 +26,7 @@ def esdf_1d(grid):
         s = ((grid[q,...] + q*q) - (grid_v_k + v_k*v_k))/(2*q - 2*v_k)
         z_k = np.take_along_axis(z, k[None, :], axis=0) # Get the value of z at corresponding k indices
         mask = (s <= z_k)
+        # Loop terminates only if none of the s values are less than z_k
         while mask.any():
             # Update k values of those 1D-arrays whose value is now less than of equal to z
             # Loop won't terminate till all the 1D arrays satisfies the condition
